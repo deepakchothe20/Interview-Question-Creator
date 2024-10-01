@@ -1,0 +1,16 @@
+ipykernel
+langchain
+dotenv
+langchain-community
+google-generativeai
+decouple
+faiss-cpu
+langchain_groq
+bs4
+pypdf
+fastapi
+aioflies
+uvicorn
+jinja2
+PyPDF2
+-e .
