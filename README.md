@@ -52,3 +52,13 @@ To install this package, follow these steps:
    ```bash
    git clone https://github.com/yourusername/GenerativeAI.git
    cd GenerativeAI
+
+### How to Create Artictecture diagram 
+``` https://whimsical.com/my-files-Vsht9KuGm2WYcRKCMNxSoL ```
+
+## Model Structure
+
+<img src="image/Model Structure.png" alt="Model Structure">
+
+## Project File Structure
+<img src="image/Project File Structure.png" alt="Project File Structure">
