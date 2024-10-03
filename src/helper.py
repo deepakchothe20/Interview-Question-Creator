@@ -12,7 +12,7 @@ def  file_process(file_path):
     loder=PyPDFLoader(file_path)
     data = loder.load()
     text_split = RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200)
-    final_doc = text_split.split_documents(question_gen)
+    final_doc = text_split.split_documents(data)
 
     return final_doc
 
@@ -30,7 +30,9 @@ def llm_pipline(file_path:str):
     import os
     from dotenv import load_dotenv
     load_dotenv()
-    from Interview-Question-Creator.src.prompt import *
+    from src.prompt import prompt_template,refine_template
+    from langchain_google_genai import GoogleGenerativeAIEmbeddings
+    from langchain_community.vectorstores import FAISS
 
     chunk_documents = file_process(file_path)
 
@@ -52,20 +54,12 @@ def llm_pipline(file_path:str):
 
     os.environ["GOOGLE_API_KEY"] = os.getenv('GEMINI_API_KEY')
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    vdb=FAISS.from_documents(documents=documents_ques_gen ,embedding=embeddings)
+    vdb=FAISS.from_documents(documents=chunk_documents ,embedding=embeddings)
     ques_list=ques.split("\n")
+    filtered_ques_list = [element for element in ques_list if element.endswith('?') or element.endswith('.')]
 
     answer_generation_chain = RetrievalQA.from_chain_type(llm=llm, 
                                                chain_type="stuff", 
                                                retriever=vdb.as_retriever())
 
-    for question in ques_list:
-    print("Question: ", question)
-    answer = answer_generation_chain.run(question)
-    print("Answer: ", answer)
-    print("--------------------------------------------------\\n\\n")
-    # Save answer to file
-    with open("answers.txt", "a") as f:
-        f.write("Question: " + question + "\\n")
-        f.write("Answer: " + answer + "\\n")
-        f.write("--------------------------------------------------\\n\\n")
+    return answer_generation_chain, filtered_ques_list
